@@ -1,13 +1,13 @@
 # Installation de l'environnement virtuel
 
-- Création un environement virtuel à la racine du projet avec la commande : **python3 -m venv <chemin d'accès au dossier du projet>\venv** sur Windows ou **python3 - m venv <chemin d'accès au dossier du projet>/venv sur macOS**
-- Activation de l'environnement virtuel avec la commande : **<chemin d'accès au dossier du projet>\venv\Scripts\activate.bat** sur Windows ou **source <chemin d'accès au dossier du projet>/venv/bin/activate** sur macOS. "(venv)" devrait apparaitre devant la ligne de commande. 
-- Insallation des packages nécessaires dans l'environnement virtuel avec la commande: **pip install -r requirements.txt**
-- Déactivation de l'environnement virtuel avec la commande : **deactivate**
+- Création un environement virtuel à la racine du projet avec la commande : 'python3 -m venv <chemin d'accès au dossier du projet>\venv' sur Windows ou 'python3 - m venv <chemin d'accès au dossier du projet>/venv sur macOS'
+- Activation de l'environnement virtuel avec la commande : '<chemin d'accès au dossier du projet>\venv\Scripts\activate.bat' sur Windows ou 'source <chemin d'accès au dossier du projet>/venv/bin/activate' sur macOS. "(venv)" devrait apparaitre devant la ligne de commande. 
+- Insallation des packages nécessaires dans l'environnement virtuel avec la commande: 'pip install -r requirements.txt'
+- Déactivation de l'environnement virtuel avec la commande : 'deactivate'
 
 # Maintenance du requirements.txt
 
-Si le code ne fonctionne pas car il manque un package, signalez-le au groupe et ajoutez le package dans requirements.txt 
+Si le code ne fonctionne pas car il manque un package, signalez-le au groupe et ajoutez le package dans *requirements.txt* 
 
 # Structure du code
 
