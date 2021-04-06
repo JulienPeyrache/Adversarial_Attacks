@@ -124,3 +124,6 @@ dmypy.json
 #macOS
 .DS_Store
 
+#Results
+.zip
+cartpole_log/
