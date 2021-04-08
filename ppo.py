@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def show(agent,eval_env,nb_episodes=10,nb_episodes_attaque=1,attack=False,render=False):
+def show(agent,eval_env,nb_episodes=10,nb_episodes_attaque=1,attack=False,render=False,ecart=1):
     episodes_rewards = []
     episode_reward = 0
     pourcentage = 0
@@ -29,7 +29,8 @@ def show(agent,eval_env,nb_episodes=10,nb_episodes_attaque=1,attack=False,render
             #Convertir en un tenseur
             torch_obs = torch.Tensor(np.expand_dims(obs,axis=0))
             #Calculer l'image adversielle
-            obs_adv = fast_gradient_method(agent_actor,torch_obs,eps_deb+eps*(k//nb_episodes_attaque),np.inf)
+            obs_adv = fgsm_regression(agent_critic,torch_obs,eps_deb+eps*(k//nb_episodes_attaque),ecart=ecart)
+            #obs_adv = fast_gradient_method(agent_actor,torch_obs,eps_deb+eps*(k//nb_episodes_attaque),np.inf)
             #Calcuer la prédiction
             action_adv,_ = agent.predict(obs_adv.detach())
             if action != action_adv:
@@ -61,7 +62,21 @@ def show(agent,eval_env,nb_episodes=10,nb_episodes_attaque=1,attack=False,render
     plt.ylabel('Pourcentage')
     plt.show()
 
+def fgsm_regression(model_fn,x,eps,ecart):
+    x = x.clone().detach().to(torch.float).requires_grad_(True)
+    y = torch.add(x,ecart)
 
+    # Compute loss
+    loss = torch.nn.functional.mse_loss(model_fn(x),model_fn(y))
+    # If attack is targeted, minimize loss of target label rather than maximize loss of correct label
+
+    # Define gradient of loss wrt input
+    loss.backward()
+    optimal_perturbation = torch.sign(x.grad)*eps
+
+    # Add perturbation to original example to obtain adversarial example
+    adv_x = x + optimal_perturbation
+    return adv_x
 
 try:
     os.mkdir("Agent")
@@ -107,4 +122,4 @@ def agent_act(obs):
     return action
 
 
-show(agent,eval_env,attack=True,nb_episodes_attaque=5)
+show(agent,eval_env,attack=True,nb_episodes_attaque=2)
