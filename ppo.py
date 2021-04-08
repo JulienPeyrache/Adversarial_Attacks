@@ -6,20 +6,21 @@ from stable_baselines3 import PPO
 from stable_baselines3.ppo import MlpPolicy
 from fgsm import fast_gradient_method
 import matplotlib.pyplot as plt
+import numpy as np
 
 
-def show(model,eval_env,nb_episodes=10,nb_episodes_attaque=1,attack=False,render=False):
+def show(agent,eval_env,nb_episodes=10,nb_episodes_attaque=1,attack=False,render=False):
     episodes_rewards = []
     episode_reward = 0
     pourcentage = 0
     episodes_pourcentages = []
     obs = eval_env.reset()
     eps_deb = 0
-    eps_fin = 0.4
+    eps_fin = 0.3
     k = 0
     steps = 0
     while k<nb_episodes*nb_episodes_attaque:
-        action, _states = model.predict(obs, deterministic=True)
+        action,_ = agent.predict(obs)
         if attack:
             if nb_episodes == 1:
                 eps = eps_fin
@@ -30,11 +31,11 @@ def show(model,eval_env,nb_episodes=10,nb_episodes_attaque=1,attack=False,render
             #Calculer l'image adversielle
             obs_adv = fast_gradient_method(agent_actor,torch_obs,eps_deb+eps*(k//nb_episodes_attaque),np.inf)
             #Calcuer la prédiction
-            action_adv, _states_adv = model.predict(obs_adv.detach().numpy(), deterministic=True)
+            action_adv,_ = agent.predict(obs_adv.detach())
             if action != action_adv:
                 pourcentage = (1+pourcentage*steps)/(steps+1)
-
-        obs, reward, done, _ = eval_env.step(action)
+        
+        obs, reward, done, _ = eval_env.step(action_adv[0])
         if render:
             eval_env.render()
         episode_reward += reward
@@ -89,7 +90,7 @@ except:
 def agent_actor(obs):
     latent_pi, _, _ = agent.policy._get_latent(obs)
     action_logits = agent.policy.action_net(latent_pi)
-    action_distribution = F.softmax(action_logits,dim=1)
+    action_distribution = torch.nn.functional.softmax(action_logits,dim = 1)
     return action_distribution
 
 #FGSM Regression
@@ -102,8 +103,8 @@ def agent_critic(obs):
 
 
 def agent_act(obs):
-    action, value, log_prob = agent.policy(obs)
+    action, _, _ = agent.policy(obs)
     return action
 
 
-show(agent,eval_env)
+show(agent,eval_env,attack=True,nb_episodes_attaque=5)
