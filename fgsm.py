@@ -63,7 +63,8 @@ def fast_gradient_method(
     model_fn,
     x,
     eps,
-    norm,
+    norm=np.inf,
+    ecart=None,
     clip_min=None,
     clip_max=None,
     y=None,
@@ -154,4 +155,20 @@ def fast_gradient_method(
 
     if sanity_checks:
         assert np.all(asserts)
+    return adv_x
+
+def fgsm_regression(model_fn,x,eps,ecart):
+    x = x.clone().detach().to(torch.float).requires_grad_(True)
+    y = torch.add(x,ecart)
+
+    # Compute loss
+    loss = torch.nn.functional.mse_loss(model_fn(x),model_fn(y))
+    # If attack is targeted, minimize loss of target label rather than maximize loss of correct label
+
+    # Define gradient of loss wrt input
+    loss.backward()
+    optimal_perturbation = torch.sign(x.grad)*eps
+
+    # Add perturbation to original example to obtain adversarial example
+    adv_x = x + optimal_perturbation
     return adv_x
