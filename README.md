@@ -15,14 +15,8 @@ Si le code ne fonctionne pas car il manque un package, signalez-le au groupe et 
 
 # Structure du code
 
-Les tests de code, qui nous impriment les résultas, se situent à la racine du projet. Nous avons également un dossier pour créer les environnements DQN et entraîner un agent DQN et un dernier dossier contenant les différentes attaques adverses
+Les tests de code, qui nous impriment les résultas, se situent à la racine du projet. Nous avons également un dossier contenant les différentes attaques adverses.
 
 # Comment lancer les tests
 
-## Lancer fgsm_adversial
-
-Il faut lancer le code fgsm_adversarial pour obtenir le résultat
-(fgsm correspond à l'implémentation de l'algorithme
-et simpleCNN coresspond à la création d'un réseau de convolution)
-
-Nécessite tensorflow et Numpy
+Il faut lancer _test_FGSM_DQN.py_ et _test_FGSM_PPO.py_.

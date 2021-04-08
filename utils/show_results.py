@@ -2,7 +2,7 @@ import torch
 import matplotlib.pyplot as plt
 import numpy as np
 
-def show(agent,eval_env,nb_episodes=10,nb_episodes_attaque=1,attack=False,model_fn=None,attack_function=None,render=False,ecart=0.5):
+def show(agent,eval_env,nb_episodes=10,nb_episodes_attaque=1,attack=False,model_fn=None,attack_function=None,render=False,ecart=0.5,plot_title="Name the graph"):
     episodes_rewards = []
     episode_reward = 0
     pourcentage = 0
@@ -53,4 +53,5 @@ def show(agent,eval_env,nb_episodes=10,nb_episodes_attaque=1,attack=False,model_
     plt.plot([eps_deb+i*(eps_fin-eps_deb)/(nb_episodes-1) for i in range(len(episodes_pourcentages))],episodes_pourcentages)
     plt.xlabel('Puissance')
     plt.ylabel('Pourcentage')
+    plt.title(plot_title)
     plt.show()
