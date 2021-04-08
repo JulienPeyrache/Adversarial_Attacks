@@ -34,7 +34,7 @@ def show(model,eval_env,nb_episodes=10,nb_episodes_attaque=1,attack=False,render
             if action != action_adv:
                 pourcentage = (1+pourcentage*steps)/(steps+1)
 
-        obs, reward, done, _ = eval_env.step(action_adv[0])
+        obs, reward, done, _ = eval_env.step(action)
         if render:
             eval_env.render()
         episode_reward += reward
@@ -75,7 +75,7 @@ eval_env.reset()
 
 
 try:
-    agent = PPO.load("Agent/model",env)
+    agent = PPO.load("Agent/model",train_env)
     print("Model loaded")
 except:
     print("Could not load the model")
