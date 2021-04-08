@@ -4,7 +4,7 @@ import torch
 
 from stable_baselines3 import PPO
 from stable_baselines3.ppo import MlpPolicy
-from attack_methods.fgsm_regression import fast_gradient_method
+from attack_methods.fgsm_classification import fast_gradient_method
 import matplotlib.pyplot as plt
 import numpy as np
 
