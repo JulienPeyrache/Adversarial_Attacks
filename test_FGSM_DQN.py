@@ -1,7 +1,7 @@
 import gym
 import numpy as np
 import torch
-from fgsm import fast_gradient_method
+from attack_methods.fgsm_classication import fast_gradient_method
 
 import stable_baselines3
 from stable_baselines3 import DQN
@@ -76,9 +76,8 @@ try:
 except:
     model = DQN("MlpPolicy", env, tensorboard_log="Agent/tensorboard", policy_kwargs=policy_kwargs, exploration_final_eps=0.1,learning_rate=0.005)
     print("Could not load the model")
-
-model.learn(total_timesteps=200000,eval_env=eval_env,reset_num_timesteps=False,eval_freq=10000,n_eval_episodes=10)
-model.save("DQN")
+    model.learn(total_timesteps=200000,eval_env=eval_env,reset_num_timesteps=False,eval_freq=10000,n_eval_episodes=10)
+    model.save("DQN")
 
 
 #episodes_rewards = env.get_episode_rewards()
