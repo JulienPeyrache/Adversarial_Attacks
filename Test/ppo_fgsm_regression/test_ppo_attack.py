@@ -12,10 +12,17 @@ import fgsm
 def show(agent,eval_env,nb_episodes=10,nb_episodes_attaque=1,attack=False,model_fn=None,attack_function=None,render=False,targeted=False,y=None):
     episodes_rewards = []
     episode_reward = 0
+    pourcentage = 0
+    episodes_pourcentages = []
+    prob_action = 0
+    episodes_prob_action = []
+    val_state = 0
+    episodes_val_state = []
     obs = eval_env.reset()
     eps_deb = 0
     eps_fin = 0.3
     k = 0
+    steps = 0
     while k<nb_episodes*nb_episodes_attaque:
         #Convertir en un tenseur
         torch_obs = torch.Tensor(np.expand_dims(obs,axis=0))
@@ -30,20 +37,38 @@ def show(agent,eval_env,nb_episodes=10,nb_episodes_attaque=1,attack=False,model_
             #Calcuer la prédiction
             action_adv,_ = agent.predict(obs_adv.detach())
             obs, reward, done, _ = eval_env.step(action_adv[0])
+            if action != action_adv:
+                pourcentage = (1+pourcentage*steps)/(steps+1)
+
+            prob_action = (((torch.max(agent_actor(obs)-agent_actor(obs_adv)))+prob_action*steps)/(steps+1))
         else:
             obs, reward, done, _ = eval_env.step(action)
         if render:
             eval_env.render()
         episode_reward += reward
+        steps += 1
         if done:
             k += 1
             if k%nb_episodes_attaque==0:
+                steps=0
                 episodes_rewards.append(episode_reward/nb_episodes_attaque)
                 episode_reward = 0
+                episodes_pourcentages.append(pourcentage)
+                pourcentage = 0
             obs = eval_env.reset()   
 
+    plt.subplot(221)
     plt.plot([eps_deb+i*(eps_fin-eps_deb)/(nb_episodes-1) for i in range(len(episodes_rewards))],episodes_rewards)
+    plt.xlabel('Puissance')
+    plt.ylabel('Rewards')
+    
+    plt.subplot(222)
+    plt.plot([eps_deb+i*(eps_fin-eps_deb)/(nb_episodes-1) for i in range(len(episodes_pourcentages))],episodes_pourcentages)
+    plt.xlabel('Puissance')
+    plt.ylabel('Pourcentage')
 
+    plt.subplot(223)
+    plt.plot()
 
 
 #FGSM
