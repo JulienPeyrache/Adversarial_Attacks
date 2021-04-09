@@ -1,7 +1,7 @@
 import gym
 import numpy as np
 import torch
-from fgsm import fast_gradient_method
+from utils.fgsm_attacks import fgsm_classification
 
 import stable_baselines3
 from stable_baselines3 import DQN
@@ -28,7 +28,7 @@ def show(model,nb_episodes=10,nb_episodes_attaque=1,attack=False,render=False):
             #Convertir en un tenseur
             torch_obs = torch.Tensor(np.expand_dims(obs,axis=0))
             #Calculer l'image adversielle
-            obs_adv = fast_gradient_method(model.q_net,torch_obs,eps_deb+eps*(k//nb_episodes_attaque),np.inf)
+            obs_adv = fgsm_classification(model.q_net,torch_obs,eps_deb+eps*(k//nb_episodes_attaque),np.inf)
             #Calcuer la prédiction
             action_adv, _states_adv = model.predict(obs_adv.detach().numpy(), deterministic=True)
             if action != action_adv:

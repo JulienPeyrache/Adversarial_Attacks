@@ -37,7 +37,8 @@ def optimize_linear(grad, eps, norm=np.inf):
         opt_pert_norm = optimal_perturbation.abs().sum(dim=red_ind)
         assert torch.all(opt_pert_norm == torch.ones_like(opt_pert_norm))
     elif norm == 2:
-        square = torch.max(avoid_zero_div, torch.sum(grad ** 2, red_ind, keepdim=True))
+        square = torch.max(avoid_zero_div, torch.sum(
+            grad ** 2, red_ind, keepdim=True))
         optimal_perturbation = grad / torch.sqrt(square)
         # TODO integrate below to a test file
         # check that the optimal perturbations have been correctly computed
@@ -59,12 +60,11 @@ def optimize_linear(grad, eps, norm=np.inf):
     return scaled_perturbation
 
 
-def fast_gradient_method(
+def fgsm_classification(
     model_fn,
     x,
     eps,
-    norm=np.inf,
-    ecart=None,
+    norm,
     clip_min=None,
     clip_max=None,
     y=None,
@@ -93,11 +93,13 @@ def fast_gradient_method(
     """
     if norm not in [np.inf, 1, 2]:
         raise ValueError(
-            "Norm order must be either np.inf, 1, or 2, got {} instead.".format(norm)
+            "Norm order must be either np.inf, 1, or 2, got {} instead.".format(
+                norm)
         )
     if eps < 0:
         raise ValueError(
-            "eps must be greater than or equal to 0, got {} instead".format(eps)
+            "eps must be greater than or equal to 0, got {} instead".format(
+                eps)
         )
     if eps == 0:
         return x
