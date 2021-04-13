@@ -73,17 +73,19 @@ def show(agent,eval_env,nb_episodes=10,nb_episodes_attaque=1,attack=False,model_
     plt.ylabel('Rewards')
     
     plt.subplot(222)
-    plt.plot([eps_deb+i*(eps_fin-eps_deb)/(nb_episodes-1) for i in range(len(episodes_pourcentages))],episodes_pourcentages,marker='d')
+    plt.plot([eps_deb+i*(eps_fin-eps_deb)/(nb_episodes-1) for i in range(len(episodes_pourcentages))],episodes_pourcentages,marker='x')
     plt.xlabel('Puissance')
-    plt.ylabel('Pourcentage')
-    plt.legend(['fgsm_classification_untargeted','fgsm_classification_targeted','fgsm_regression_untargeted','fgsm_regression_targeted'])
+    plt.ylabel('Accuracy (%)')
+    plt.legend(['fgsm_classification_min','fgsm_classification_max','fgsm_regression_min','fgsm_regression_max'],loc='best',bbox_to_anchor=(0.5, 0., 0.5, 0.5))
+    
     plt.subplot(223)
-    plt.plot([eps_deb+i*(eps_fin-eps_deb)/(nb_episodes-1) for i in range(len(episodes_prob_action))],episodes_prob_action,marker='o')
-    #plt.fill_between([eps_deb+i*(eps_fin-eps_deb)/(nb_episodes-1) for i in range(len(episodes_prob_action))],episodes_prob_action,episodes_prob_action_std)
+    plt.plot([eps_deb+i*(eps_fin-eps_deb)/(nb_episodes-1) for i in range(len(episodes_prob_action))],episodes_prob_action,marker='x')
+    #plt.fill_between([eps_deb+i*(eps_fin-eps_deb)/(nb_episodes-1) for i in range(len(episodes_prob_action))],episodes_prob_action,episodes_prob_action_std,alpha=0.5)
     plt.xlabel('Puissance')
     plt.ylabel('prob_action')
+    
     plt.subplot(224)
-    plt.plot([eps_deb+i*(eps_fin-eps_deb)/(nb_episodes-1) for i in range(len(episodes_val_state))],episodes_val_state,marker='*')
+    plt.plot([eps_deb+i*(eps_fin-eps_deb)/(nb_episodes-1) for i in range(len(episodes_val_state))],episodes_val_state,marker='x')
     plt.xlabel('Puissance')
     plt.ylabel('val_state')
 
@@ -113,15 +115,16 @@ def agent_act(obs):
 if __name__ == '__main__':
     env = gym.make('CartPole-v0')
 
-    agent = PPO.load("PPO_Agent/model")
+    agent = PPO.load("Test/PPO_Agent/model")
     plt.xlabel('Puissance')
     plt.ylabel('Rewards')
-    show(agent,env,nb_episodes_attaque=20,attack=True,model_fn=agent_actor,attack_function=fgsm.fast_gradient_method,targeted=False)
-    show(agent,env,nb_episodes_attaque=20,attack=True,model_fn=agent_actor,attack_function=fgsm.fast_gradient_method,targeted=True)
+    show(agent,env,nb_episodes_attaque=2,attack=True,model_fn=agent_actor,attack_function=fgsm.fast_gradient_method,targeted=False)
+    show(agent,env,nb_episodes_attaque=2,attack=True,model_fn=agent_actor,attack_function=fgsm.fast_gradient_method,targeted=True)
     
-    show(agent,env,nb_episodes_attaque=20,attack=True,model_fn=agent_critic,attack_function=fgsm.fast_gradient_method_regression,targeted=False)
-    show(agent,env,nb_episodes_attaque=20,attack=True,model_fn=agent_critic,attack_function=fgsm.fast_gradient_method_regression,targeted=True)
+    show(agent,env,nb_episodes_attaque=2,attack=True,model_fn=agent_critic,attack_function=fgsm.fast_gradient_method_regression,targeted=False)
+    show(agent,env,nb_episodes_attaque=2,attack=True,model_fn=agent_critic,attack_function=fgsm.fast_gradient_method_regression,targeted=True)
     
+    plt.tight_layout()
     plt.show()
 
 
