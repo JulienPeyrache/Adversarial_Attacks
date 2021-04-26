@@ -38,15 +38,16 @@ def show(agent,eval_env,nb_episodes=10,nb_episodes_attaque=1,attack=False,model_
             obs_adv = attack_function(model_fn,torch_obs,eps=eps,norm=np.inf,targeted=targeted)
             action_adv,_ = agent.predict(obs_adv.detach(),deterministic=True)
             obs, reward, done, _ = eval_env.step(action_adv[0])
-            if action != action_adv:
+            if action != action_adv[0]:
                 pourcentage.append(1)
             else:
                 pourcentage.append(0)
 
         else:
-            obs, reward, done, _ = eval_env.step(action.numpy()[0])
-        prob_action.append((torch.max(agent_actor(torch_obs)-agent_actor(obs_adv)).detach()))
-        val_state.append((torch.max(agent_critic(torch_obs)-agent_critic(obs_adv)).detach()))
+            obs, reward, done, _ = eval_env.step(action)
+        if attack:
+            prob_action.append((torch.max(agent_actor(torch_obs)-agent_actor(obs_adv)).detach()))
+            val_state.append((torch.max(agent_critic(torch_obs)-agent_critic(obs_adv)).detach()))
         if render:
             eval_env.render()
         episode_reward += reward
@@ -111,11 +112,13 @@ def agent_act(obs):
 
 
 if __name__ == '__main__':
-    env = gym.make('CartPole-v0')
+    env = gym.make('LunarLanderContinuous-v2')
+    env.reset()
 
-    agent = PPO.load("PPO_Agent/model")
+    agent = PPO.load("PPO_Agent/model",env)
     plt.xlabel('Puissance')
     plt.ylabel('Rewards')
+    show(agent,env,attack=False,render=True)
     show(agent,env,nb_episodes_attaque=20,attack=True,model_fn=agent_actor,attack_function=fgsm.fast_gradient_method,targeted=False)
     show(agent,env,nb_episodes_attaque=20,attack=True,model_fn=agent_actor,attack_function=fgsm.fast_gradient_method,targeted=True)
     
